@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 import javax.sql.DataSource;
@@ -33,6 +34,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final AuthenticationManager authenticationManager; //스프링 시큐리티의 핵심 인터페이스(얘가 인증을 많이 함)
     private final CustomUserDetailService userDetailService;
 
+    //ClientDetailsServiceConfigurer: client detail service를 정의하는 구성 클래스
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         //JDBC 방식
@@ -49,15 +51,25 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .accessTokenValiditySeconds(30000);*/
     }
 
+    //AuthorizationServerSecurityConfigurer: 토큰 엔드포인트에 대한 보안 제약을 정의
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()") //allow check token, 토큰체크 엔드포인트 활성화 해줌
+                .allowFormAuthenticationForClients();
+    }
+
+    //AuthorizationServerEndpointsConfigurer: 인가와 토큰 엔드포인트, 토큰 서비스를 정의
     // AuthenticationManager, TokenStore, UserDetailsService를 설정할 수 있음
     // 유저정보를 확인을 해야 토큰을 발급 받을 수 있음
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //JWT 방식
-        super.configure(endpoints);
+        /*super.configure(endpoints);
         endpoints
                 .accessTokenConverter(jwtAccessTokenConverter())
-                .userDetailsService(userDetailService);
+                .userDetailsService(userDetailService);*/
 
         //JDBC 방식
         /*endpoints
