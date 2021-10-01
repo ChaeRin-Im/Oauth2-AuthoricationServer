@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bootex?serverTimezone=UTC&characterEncoding=UTF-8
+    username: bootex
+    password: bootex
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+security:
+  user:
+    name: user
+    password: test
+  #signkey 고정함으로 서버 재부팅해도 갱신키 발급이 가능해진다.
+  oauth2:
+    jwt:
+      signkey: 123@#$
+
+logging:
+  config: classpath:log4j2.xml
